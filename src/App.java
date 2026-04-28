@@ -21,6 +21,9 @@ public class App {
 
     /** Pilha de pedidos */
     static Pilha<Pedido> pilhaPedidos = new Pilha<>();
+
+    /** Pilha de produtos mais recentemente pedidos */
+    static Pilha<Produto> pilhaProdutos = new Pilha<>();
         
     static void limparTela() {
         System.out.print("\033[H\033[2J");
@@ -143,7 +146,7 @@ public class App {
     	System.out.println("Digite o nome ou a descrição do produto desejado:");
         descricao = teclado.nextLine();
         for (int i = 0; (i < quantosProdutos && !localizado); i++) {
-        	if (produtosCadastrados[i].descricao.equals(descricao)) {
+        	if (produtosCadastrados[i].descricao.equalsIgnoreCase(descricao)) {
         		produto = produtosCadastrados[i];
         		localizado = true;
     		}
@@ -170,7 +173,7 @@ public class App {
         cabecalho();
         System.out.println("\nPRODUTOS CADASTRADOS:");
         for (int i = 0; i < quantosProdutos; i++) {
-        	System.out.println(String.format("%02d - %s", (i + 1), produtosCadastrados[i].toString()));
+        	System.out.println(String.format("%d - %s", produtosCadastrados[i].hashCode(), produtosCadastrados[i].toString()));
         }
     }
     
@@ -209,20 +212,53 @@ public class App {
      * @param pedido O pedido que deve ser finalizado.
      */
     public static void finalizarPedido(Pedido pedido) {
-    	
-    	// TODO
+
+    	if (pedido == null) {
+    		System.out.println("Nenhum pedido em andamento para finalizar.");
+    		return;
+    	}
+
+    	pilhaPedidos.empilhar(pedido);
+
+    	ItemDePedido[] itens = pedido.getItensDoPedido();
+    	int quantidade = pedido.getQuantItensDePedido();
+    	for (int i = 0; i < quantidade; i++) {
+    		pilhaProdutos.empilhar(itens[i].getProduto());
+    	}
+
+    	System.out.println("Pedido finalizado com sucesso!");
+    	System.out.println(pedido);
     }
     
     public static void listarProdutosPedidosRecentes() {
-    	
-    	// TODO
+
+    	cabecalho();
+
+    	if (pilhaProdutos.vazia()) {
+    		System.out.println("Nenhum produto foi pedido ainda.");
+    		return;
+    	}
+
+    	int numProdutos = lerOpcao("Quantos produtos recentes deseja listar?", Integer.class);
+
+    	try {
+    		Pilha<Produto> recentes = pilhaProdutos.subPilha(numProdutos);
+    		System.out.println("\nProdutos dos pedidos mais recentes:");
+    		int contador = 1;
+    		while (!recentes.vazia()) {
+    			System.out.println(String.format("%02d - %s", contador, recentes.desempilhar()));
+    			contador++;
+    		}
+    	} catch (IllegalArgumentException e) {
+    		System.out.println(e.getMessage());
+    	}
     }
     
 	public static void main(String[] args) {
 		
 		teclado = new Scanner(System.in, Charset.forName("UTF-8"));
         
-		nomeArquivoDados = "produtos.txt";
+		nomeArquivoDados = "C:\\Users\\lucas\\OneDrive\\Documents\\JAVA\\AEDS 2 - 2026\\unidade-2-estruturas-de-dados-lineares-e-flex-veis-lucaslmchaves\\produtos.txt";
         produtosCadastrados = lerProdutos(nomeArquivoDados);
         
         Pedido pedido = null;
