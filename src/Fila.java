@@ -53,6 +53,21 @@ public class Fila<E> {
 
 	}
 	
+	public int contarOcorrencias(E item) {
+
+		int contador = 0;
+		Celula<E> aux = frente.getProximo();
+
+		while (aux != null) {
+			if (aux.getItem().equals(item)) {
+				contador++;
+			}
+			aux = aux.getProximo();
+		}
+
+		return contador;
+	}
+
 	public Fila<E> extrairLote(int numItens) {
 
 		Fila<E> lote = new Fila<>();

@@ -2,7 +2,9 @@ import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.util.Scanner;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 
 public class App {
@@ -239,6 +241,26 @@ public class App {
     	}
     }
     
+    public static void salvarPedidos() {
+
+    	if (filaPedidos.vazia()) {
+    		return;
+    	}
+
+    	try {
+    		PrintWriter escritor = new PrintWriter(new FileWriter("pedidos.txt", Charset.forName("UTF-8")));
+
+    		while (!filaPedidos.vazia()) {
+    			escritor.println(filaPedidos.desenfileirar());
+    		}
+
+    		escritor.close();
+    		System.out.println("Pedidos salvos em arquivo com sucesso!");
+    	} catch (IOException e) {
+    		System.out.println("Erro ao salvar pedidos: " + e.getMessage());
+    	}
+    }
+
 	public static void main(String[] args) {
 		
 		teclado = new Scanner(System.in, Charset.forName("UTF-8"));
@@ -261,8 +283,9 @@ public class App {
                 case 6 -> listarProdutosPedidosRecentes();
             }
             pausa();
-        }while(opcao != 0);       
+        }while(opcao != 0);
 
+        salvarPedidos();
         teclado.close();    
     }
 }
