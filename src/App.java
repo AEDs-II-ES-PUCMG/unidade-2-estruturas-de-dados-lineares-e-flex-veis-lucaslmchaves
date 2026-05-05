@@ -19,11 +19,8 @@ public class App {
     /** Quantidade de produtos cadastrados atualmente no vetor */
     static int quantosProdutos = 0;
 
-    /** Pilha de pedidos */
-    static Pilha<Pedido> pilhaPedidos = new Pilha<>();
-
-    /** Pilha de produtos mais recentemente pedidos */
-    static Pilha<Produto> pilhaProdutos = new Pilha<>();
+    /** Fila de pedidos */
+    static Fila<Pedido> filaPedidos = new Fila<>();
         
     static void limparTela() {
         System.out.print("\033[H\033[2J");
@@ -66,7 +63,7 @@ public class App {
         System.out.println("3 - Procurar por um produto, por nome");
         System.out.println("4 - Iniciar novo pedido");
         System.out.println("5 - Fechar pedido");
-        System.out.println("6 - Listar produtos dos pedidos mais recentes");
+        System.out.println("6 - Listar pedidos mais recentes");
         System.out.println("0 - Sair");
         System.out.print("Digite sua opção: ");
         return Integer.parseInt(teclado.nextLine());
@@ -218,13 +215,7 @@ public class App {
     		return;
     	}
 
-    	pilhaPedidos.empilhar(pedido);
-
-    	ItemDePedido[] itens = pedido.getItensDoPedido();
-    	int quantidade = pedido.getQuantItensDePedido();
-    	for (int i = 0; i < quantidade; i++) {
-    		pilhaProdutos.empilhar(itens[i].getProduto());
-    	}
+    	filaPedidos.enfileirar(pedido);
 
     	System.out.println("Pedido finalizado com sucesso!");
     	System.out.println(pedido);
@@ -234,23 +225,17 @@ public class App {
 
     	cabecalho();
 
-    	if (pilhaProdutos.vazia()) {
-    		System.out.println("Nenhum produto foi pedido ainda.");
+    	if (filaPedidos.vazia()) {
+    		System.out.println("Nenhum pedido na fila.");
     		return;
     	}
 
-    	int numProdutos = lerOpcao("Quantos produtos recentes deseja listar?", Integer.class);
+    	int numPedidos = lerOpcao("Quantos pedidos deseja extrair da fila?", Integer.class);
 
-    	try {
-    		Pilha<Produto> recentes = pilhaProdutos.subPilha(numProdutos);
-    		System.out.println("\nProdutos dos pedidos mais recentes:");
-    		int contador = 1;
-    		while (!recentes.vazia()) {
-    			System.out.println(String.format("%02d - %s", contador, recentes.desempilhar()));
-    			contador++;
-    		}
-    	} catch (IllegalArgumentException e) {
-    		System.out.println(e.getMessage());
+    	Fila<Pedido> lote = filaPedidos.extrairLote(numPedidos);
+    	System.out.println("\nPedidos extraidos da fila:");
+    	while (!lote.vazia()) {
+    		System.out.println(lote.desenfileirar());
     	}
     }
     

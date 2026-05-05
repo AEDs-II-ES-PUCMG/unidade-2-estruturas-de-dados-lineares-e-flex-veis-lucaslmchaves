@@ -53,6 +53,17 @@ public class Fila<E> {
 
 	}
 	
+	public Fila<E> extrairLote(int numItens) {
+
+		Fila<E> lote = new Fila<>();
+
+		for (int i = 0; i < numItens && !vazia(); i++) {
+			lote.enfileirar(desenfileirar());
+		}
+
+		return lote;
+	}
+
 	public void imprimir() {
 		
 		Celula<E> aux;
