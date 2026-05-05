@@ -135,22 +135,33 @@ public class App {
      *  @return O produto encontrado ou null, caso o produto não tenha sido localizado no vetor de produtos cadastrados.
      */
     static Produto localizarProdutoDescricao() {
-        
+
     	Produto produto = null;
     	Boolean localizado = false;
-    	String descricao;
-    	
+    	String entrada;
+
     	cabecalho();
     	System.out.println("Localizando um produto...");
-    	System.out.println("Digite o nome ou a descrição do produto desejado:");
-        descricao = teclado.nextLine();
-        for (int i = 0; (i < quantosProdutos && !localizado); i++) {
-        	if (produtosCadastrados[i].descricao.equalsIgnoreCase(descricao)) {
-        		produto = produtosCadastrados[i];
-        		localizado = true;
-    		}
+    	System.out.println("Digite o codigo ou o nome do produto desejado:");
+        entrada = teclado.nextLine();
+
+        try {
+        	int codigo = Integer.parseInt(entrada);
+        	for (int i = 0; (i < quantosProdutos && !localizado); i++) {
+        		if (produtosCadastrados[i].hashCode() == codigo) {
+        			produto = produtosCadastrados[i];
+        			localizado = true;
+        		}
+        	}
+        } catch (NumberFormatException e) {
+        	for (int i = 0; (i < quantosProdutos && !localizado); i++) {
+        		if (produtosCadastrados[i].descricao.equalsIgnoreCase(entrada)) {
+        			produto = produtosCadastrados[i];
+        			localizado = true;
+        		}
+        	}
         }
-        
+
         return produto;
     }
     
